@@ -91,7 +91,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="horizontal"
-        android:background="@drawable/rounded_edittext_bg"
+        android:background="@drawable/bg_underline_state"
         android:gravity="center_vertical"
         app:layout_constraintTop_toBottomOf="@id/tvStudentId">
 
@@ -99,12 +99,13 @@
             android:id="@+id/ivUser"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/user"
+            android:src="@drawable/ic_user"
             android:contentDescription="user_icon"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:adjustViewBounds="true"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+            app:tint="@color/selector_icon_tint" />
 
         <View
             android:layout_width="6dp"
@@ -117,7 +118,7 @@
             android:layout_height="26dp"
             android:layout_marginTop="11dp"
             android:layout_marginBottom="11dp"
-            android:background="@color/darker_gray" />
+            android:background="@drawable/divider_selector" />
 
         <View
             android:layout_width="8dp"
@@ -163,7 +164,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="horizontal"
-        android:background="@drawable/rounded_edittext_bg"
+        android:background="@drawable/bg_underline_state"
         android:gravity="center_vertical"
         app:layout_constraintTop_toBottomOf="@id/tvPassword">
 
@@ -176,7 +177,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:adjustViewBounds="true"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+            app:tint="@color/selector_icon_tint" />
 
         <View
             android:layout_width="6dp"
@@ -189,7 +191,7 @@
             android:layout_height="26dp"
             android:layout_marginTop="11dp"
             android:layout_marginBottom="11dp"
-            android:background="@color/darker_gray" />
+            android:background="@drawable/divider_selector" />
 
         <View
             android:layout_width="8dp"
@@ -215,7 +217,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_visibility"
+            android:src="@drawable/ic_visibility_off"
             android:contentDescription="toggle_password"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
