@@ -6,69 +6,75 @@
     android:id="@+id/activity_welcome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_blue_curve"
-    android:transitionName="background_trans"
     tools:context=".WelcomeActivity">
 
-<!-- Guideline theo chiều dọc 60% -->
-<androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guidelineCurve"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    app:layout_constraintGuide_percent="0.68" />
+    <include
+        android:id="@+id/include_login_background"
+        layout="@layout/login_background"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:transitionName="login_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-<ImageView
-    android:id="@+id/bgPattern"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:alpha="0.2"
-    android:scaleType="centerCrop"
-    android:src="@drawable/bg_pattern"
-    android:contentDescription="image_background"
-    android:transitionName="bgPattern"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="@id/guidelineCurve"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineCurve"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.68" />
 
-<TextView
-    android:id="@+id/tvWelcome"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_marginStart="22dp"
-    android:layout_marginTop="-38dp"
-    android:text="Chào mừng"
-    android:textColor="#333333"
-    android:textSize="45sp"
-    android:textStyle="bold"
-    android:fontFamily="@font/roboto_bold"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="@id/guidelineCurve" />
+    <ImageView
+        android:id="@+id/bgPattern"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:alpha="0.2"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_pattern"
+        android:transitionName="pattern"
+        android:contentDescription="image_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/guidelineCurve"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-<!-- Logo trường -->
-<ImageView
-    android:id="@+id/ivLogo"
-    android:layout_width="350dp"
-    android:layout_height="wrap_content"
-    android:src="@drawable/logo"
-    android:contentDescription="@string/logo_desc"
-    app:layout_constraintStart_toStartOf="@id/tvWelcome"
-    app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-    android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="-38dp"
+        android:text="Chào mừng"
+        android:textColor="#333333"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/roboto_bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelineCurve" />
 
-<!-- Nút Tiếp tục -->
-<ImageButton
-    android:id="@+id/btnContinue"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
-    android:background="@drawable/circle_bg"
-    android:src="@drawable/ic_arrow_right"
-    android:contentDescription="@string/continue_desc"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:layout_marginEnd="24dp"
-    android:layout_marginBottom="48dp"
-    app:tint="#2196F3" />
+    <!-- Logo trường -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        android:contentDescription="@string/logo_desc"
+        app:layout_constraintStart_toStartOf="@id/tvWelcome"
+        app:layout_constraintTop_toBottomOf="@id/tvWelcome"
+        android:layout_marginTop="2dp"/>
+
+    <!-- Nút Tiếp tục -->
+    <ImageButton
+        android:id="@+id/btnContinue"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/circle_bg"
+        android:src="@drawable/ic_arrow_right"
+        android:contentDescription="@string/continue_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="48dp"
+        app:tint="#2196F3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
