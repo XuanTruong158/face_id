@@ -31,7 +31,6 @@
         android:alpha="0.2"
         android:scaleType="centerCrop"
         android:src="@drawable/bg_pattern"
-        android:transitionName="pattern"
         android:contentDescription="image_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/guidelineCurve"
