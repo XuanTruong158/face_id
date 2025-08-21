@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:tools="http://schemas.android.com/tools"
+android:background="@color/background"
+tools:context=".FaceRegistration">
+
+<LinearLayout
+    android:id="@+id/top_bar"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/bg_top_bar_rounded"
+    android:padding="16dp"
+    android:gravity="center_vertical"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    tools:paddingTop="20dp">
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="@color/white" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:text="Đăng ký khuôn mặt"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_weight="1" />
+</LinearLayout>
+
+<!-- Thẻ thiết lập nhận diện khuôn mặt -->
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/camera_card"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="24dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/top_bar"
+    app:strokeColor="@android:color/darker_gray"
+    app:strokeWidth="1dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/face_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_user"
+                android:contentDescription="Face icon"
+                app:tint="@color/black" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Thiết lập nhận diện khuôn mặt"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/camera_icon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/circle_bg"
+            android:backgroundTint="#D9D9D9"
+            android:src="@drawable/ic_camera"
+            android:contentDescription="Camera placeholder"
+            android:scaleType="centerInside"
+            app:tint="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp"
+            android:text="Chúng tôi sẽ chụp một vài bức ảnh để thiết lập đăng ký khuôn mặt cho tài khoản của bạn."
+            android:textColor="#969393"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"/>
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Bắt đầu đăng ký"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/roboto_semibold"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/notice_card"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="24dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/camera_card"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@android:color/darker_gray"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:id="@+id/warning"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_warning"
+                android:contentDescription="Warning icon" />
+
+            <TextView
+                android:id="@+id/notice_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lưu ý quan trọng"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/roboto_regular"/>
+        </LinearLayout>
+
+        <!-- Các lưu ý dạng bullet -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="• Bạn nên làm việc ở nơi có ánh sáng tốt."
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="• Quay vào camera trong suốt quá trình."
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="• Không đeo kính, khẩu trang, mũ."
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="• Đứng thẳng người và cười nhẹ nhàng."
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="• Quá trình mất khoảng 10 đến 15 giây."
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+
+<!-- Thẻ bảo mật -->
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/privacy_card"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="24dp"
+    android:layout_marginBottom="24dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/notice_card"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/light_blue"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#6679B4FF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/warning_1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_warning"
+                android:contentDescription="Warning icon"
+                app:tint="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/privacy_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bảo mật dữ liệu"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/roboto_regular"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/privacy_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Bảo vệ bảo đảm bao gồm tất cả dữ liệu và thẻ an toàn. Chúng tôi không tiết lộ thông tin này với bên thứ ba."
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp"
+            android:fontFamily="@font/roboto_regular"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

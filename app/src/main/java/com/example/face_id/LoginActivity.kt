@@ -1,11 +1,13 @@
 package com.example.face_id
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -24,6 +26,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var ivLock: ImageView
     private lateinit var ivPasswordToggle: ImageButton
 
+    private lateinit var btnLogin: Button
     private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +44,8 @@ class LoginActivity : AppCompatActivity() {
         ivLock = findViewById(R.id.ivLock)
         ivPasswordToggle = findViewById(R.id.ivPasswordToggle)
 
-        // Gắn logic đổi màu cho 2 field
+        btnLogin = findViewById(R.id.btnLogin)
+
         wireUnderline(
             container = llStudentId,
             editText = etStudentId,
@@ -55,7 +59,6 @@ class LoginActivity : AppCompatActivity() {
             icon = ivLock
         )
 
-        // Toggle hiện/ẩn mật khẩu
         ivPasswordToggle.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
@@ -74,6 +77,12 @@ class LoginActivity : AppCompatActivity() {
             // Giữ con trỏ ở cuối & cập nhật underline
             etPasswordCustom.setSelection(etPasswordCustom.text?.length ?: 0)
             llPassword.refreshDrawableState()
+        }
+
+
+        btnLogin.setOnClickListener {
+            val intent = Intent(this@LoginActivity, FaceRegistration::class.java)
+            startActivity(intent)
         }
     }
 
