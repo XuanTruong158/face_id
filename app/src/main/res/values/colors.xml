@@ -10,4 +10,8 @@
     <color name="gray_600">#FF757575</color>
     <color name="colorPrimary">#004EAF</color>
     <color name="background">#FAFAFA</color>
+    <color name="blue_700">#1565C0</color>
+    <color name="blue_900">#0D47A1</color>
+    <color name="card_stroke">#E0E3E7</color>
+    <color name="text_secondary">#6B7280</color>
 </resources>
