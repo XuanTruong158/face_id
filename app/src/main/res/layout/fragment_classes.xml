@@ -9,7 +9,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue_700">
+        android:background="@drawable/bg_blue_rounded"
+        >
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -22,22 +23,25 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSearch"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:boxBackgroundMode="none"
+                app:startIconDrawable="@drawable/ic_search"
                 app:endIconMode="custom"
-                app:endIconDrawable="@android:drawable/ic_menu_manage"
-                android:paddingStart="2dp"
-                android:paddingEnd="12dp">
+
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionSearch"
-                    android:text="🔍 Tìm kiếm lớp học…"/>
+                    android:background="@null"
+                    android:hint=""
+                    android:imeOptions="actionSearch"/>
             </com.google.android.material.textfield.TextInputLayout>
         </com.google.android.material.card.MaterialCardView>
+
     </FrameLayout>
 
     <!-- Header "LỚP CỦA TÔI" + "Xem tất cả" -->

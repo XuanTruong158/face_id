@@ -26,7 +26,7 @@
         </activity>
         <activity android:name=".LoginActivity"/>
         <activity android:name=".FaceRegistration"/>
-        <activity android:name=".MainActivityGVMenu"/>
+
 
         <activity
             android:name=".FaceCaptureActivity"
