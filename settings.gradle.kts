@@ -19,6 +19,8 @@ dependencyResolutionManagement {
     }
 }
 
+
+
 rootProject.name = "Face_ID"
 include(":app")
  
