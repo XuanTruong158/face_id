@@ -37,9 +37,6 @@ class FaceRegistration : AppCompatActivity() {
         }
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
-        backButton.setOnClickListener {
-            finish()
-        }
 
         startButton.setOnClickListener {
             val intent = Intent(this@FaceRegistration, FaceCaptureActivity::class.java)
