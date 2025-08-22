@@ -84,6 +84,7 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this@LoginActivity, FaceRegistration::class.java)
             startActivity(intent)
         }
+
     }
 
     /**

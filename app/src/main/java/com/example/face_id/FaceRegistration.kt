@@ -38,7 +38,8 @@ class FaceRegistration : AppCompatActivity() {
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
         backButton.setOnClickListener {
-            finish()
+            val intent = Intent(this@FaceRegistration, MainActivityGVMenu::class.java)
+            startActivity(intent)
         }
 
         startButton.setOnClickListener {

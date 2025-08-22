@@ -1,0 +1,4 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/mnu_home" android:title="Lớp học" />
+    <item android:id="@+id/mnu_settings" android:title="Cài đặt" />
+</menu>
