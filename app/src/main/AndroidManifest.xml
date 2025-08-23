@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Face_ID">
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".auth.ui.WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,16 +24,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".FaceRegistration"/>
+        <activity android:name=".auth.ui.LoginActivity"/>
+        <activity android:name=".face_registration.ui.FaceRegistration"/>
 
 
         <activity
-            android:name=".FaceCaptureActivity"
+            android:name=".face_registration.ui.FaceCaptureActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FaceRegistrationSuccessActivity"
+            android:name=".face_registration.ui.FaceRegistrationSuccessActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
     </application>

@@ -1,4 +1,4 @@
-package com.example.face_id
+package com.example.face_id.auth.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +13,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.face_id.face_registration.ui.FaceRegistration
+import com.example.face_id.R
 
 class LoginActivity : AppCompatActivity() {
 
@@ -119,4 +121,3 @@ class LoginActivity : AppCompatActivity() {
         update()
     }
 }
-

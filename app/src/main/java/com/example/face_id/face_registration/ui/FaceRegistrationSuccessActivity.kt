@@ -1,10 +1,12 @@
-package com.example.face_id
+package com.example.face_id.face_registration.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import com.example.face_id.R
+import com.example.face_id.auth.ui.WelcomeActivity
 
 class FaceRegistrationSuccessActivity : AppCompatActivity() {
 

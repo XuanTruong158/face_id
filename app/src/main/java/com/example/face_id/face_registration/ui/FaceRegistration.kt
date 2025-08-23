@@ -1,5 +1,4 @@
-package com.example.face_id
-
+package com.example.face_id.face_registration.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.example.face_id.R
 
 class FaceRegistration : AppCompatActivity() {
 

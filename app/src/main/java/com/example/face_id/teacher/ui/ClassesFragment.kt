@@ -1,5 +1,4 @@
-package com.example.face_id
-
+package com.example.face_id.teacher.ui
 
 import android.os.Bundle
 import android.text.Editable
@@ -9,9 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.face_id.teacher.ui.adapter.ClassAdapter
+import com.example.face_id.teacher.model.ClassItem
 import com.example.face_id.databinding.FragmentClassesBinding
-import com.example.face_id.ClassItem
-
 
 class ClassesFragment : Fragment() {
     private var _binding: FragmentClassesBinding? = null
