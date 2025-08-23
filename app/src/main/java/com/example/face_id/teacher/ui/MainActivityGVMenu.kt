@@ -1,14 +1,12 @@
-package com.example.face_id
-
+package com.example.face_id.teacher.ui
 
 import android.os.Bundle
-import android.text.TextUtils.replace
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
-import com.example.face_id.ClassesFragment
+import com.example.face_id.teacher.ui.ClassesFragment
+import com.example.face_id.R
 import com.example.face_id.databinding.ActivityMainGvBinding
-
 
 class MainActivityGVMenu : AppCompatActivity() {
     private lateinit var binding: ActivityMainGvBinding
@@ -22,8 +20,10 @@ class MainActivityGVMenu : AppCompatActivity() {
 
 
         setSupportActionBar(binding.toolbar)
-        toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar,
-            R.string.nav_open, R.string.nav_close)
+        toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.nav_open, R.string.nav_close
+        )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 

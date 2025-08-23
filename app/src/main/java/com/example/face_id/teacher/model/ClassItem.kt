@@ -1,5 +1,4 @@
-package com.example.face_id
-
+package com.example.face_id.teacher.model
 
 data class ClassItem(
     val title: String,

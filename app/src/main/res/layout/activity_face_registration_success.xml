@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".FaceRegistrationSuccessActivity">
+    tools:context=".face_registration.ui.FaceRegistrationSuccessActivity">
 
     <!-- Thanh tiêu đề -->
     <LinearLayout

@@ -1,14 +1,12 @@
-package com.example.face_id
-
+package com.example.face_id.teacher.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.face_id.teacher.model.ClassItem
 import com.example.face_id.databinding.ItemClassBinding
-import com.example.face_id.ClassItem
 import java.util.Locale
-
 
 class ClassAdapter(private val original: MutableList<ClassItem>) :
     RecyclerView.Adapter<ClassAdapter.VH>() {

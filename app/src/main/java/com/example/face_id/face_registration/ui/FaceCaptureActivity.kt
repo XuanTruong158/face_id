@@ -1,4 +1,4 @@
-package com.example.face_id
+package com.example.face_id.face_registration.ui
 
 import android.Manifest
 import android.content.ContentValues
@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -27,6 +28,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.face_id.face_registration.ui.FaceRegistrationSuccessActivity
+import com.example.face_id.R
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
@@ -125,7 +128,7 @@ class FaceCaptureActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        val cameraProviderFuture = ProcessCameraProvider.Companion.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
@@ -139,7 +142,7 @@ class FaceCaptureActivity : AppCompatActivity() {
 
             val parent = userPlaceholder.parent as ViewGroup
             parent.addView(previewView, 0)
-            userPlaceholder.visibility = android.view.View.GONE
+            userPlaceholder.visibility = View.GONE
 
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(previewView.surfaceProvider)
@@ -210,7 +213,7 @@ class FaceCaptureActivity : AppCompatActivity() {
                 val (status, hint) = when (state.pose) {
                     // Bước 0: "nhìn thẳng" dùng ngưỡng tuyệt đối (chưa cần baseline)
                     Pose.STRAIGHT -> {
-                        val ok = (kotlin.math.abs(yaw) <= 10f && kotlin.math.abs(pitch) <= 10f)
+                        val ok = (abs(yaw) <= 10f && abs(pitch) <= 10f)
                         if (ok) PoseStatus.OK to "Đúng tư thế — giữ yên…"
                         else    PoseStatus.NEED_MORE to "Canh thẳng mặt vào giữa khung"
                     }
@@ -222,7 +225,7 @@ class FaceCaptureActivity : AppCompatActivity() {
                         } else {
                             val dyRaw = yaw - yaw0
                             // nếu chưa hiệu chuẩn dấu và thấy đi sai chiều rõ rệt → lật dấu
-                            if (yawSign == null && kotlin.math.abs(dyRaw) > YAW_DELTA) {
+                            if (yawSign == null && abs(dyRaw) > YAW_DELTA) {
                                 yawSign = if (state.pose == Pose.LEFT && dyRaw > 0f) -1f
                                 else if (state.pose == Pose.RIGHT && dyRaw < 0f) -1f
                                 else 1f
@@ -233,8 +236,8 @@ class FaceCaptureActivity : AppCompatActivity() {
                             if (state.pose == Pose.LEFT) {
                                 when {
                                     dy > eps -> PoseStatus.WRONG_DIR to "Sai hướng — quay TRÁI thêm ←"
-                                    kotlin.math.abs(dy) < YAW_DELTA -> {
-                                        val remain = (YAW_DELTA - kotlin.math.abs(dy)).coerceAtLeast(0f)
+                                    abs(dy) < YAW_DELTA -> {
+                                        val remain = (YAW_DELTA - abs(dy)).coerceAtLeast(0f)
                                         PoseStatus.NEED_MORE to "Chưa đủ — quay TRÁI thêm ≈ ${"%.0f".format(remain)}°"
                                     }
                                     else -> PoseStatus.OK to "Đúng — giữ yên…"
@@ -242,8 +245,8 @@ class FaceCaptureActivity : AppCompatActivity() {
                             } else { // RIGHT
                                 when {
                                     dy < -eps -> PoseStatus.WRONG_DIR to "Sai hướng — quay PHẢI thêm →"
-                                    kotlin.math.abs(dy) < YAW_DELTA -> {
-                                        val remain = (YAW_DELTA - kotlin.math.abs(dy)).coerceAtLeast(0f)
+                                    abs(dy) < YAW_DELTA -> {
+                                        val remain = (YAW_DELTA - abs(dy)).coerceAtLeast(0f)
                                         PoseStatus.NEED_MORE to "Chưa đủ — quay PHẢI thêm ≈ ${"%.0f".format(remain)}°"
                                     }
                                     else -> PoseStatus.OK to "Đúng — giữ yên…"
@@ -258,7 +261,7 @@ class FaceCaptureActivity : AppCompatActivity() {
                             PoseStatus.NEED_MORE to "Chưa có baseline — hãy chụp tấm nhìn thẳng trước"
                         } else {
                             val dpRaw = pitch - pitch0
-                            if (pitchSign == null && kotlin.math.abs(dpRaw) > PITCH_DELTA) {
+                            if (pitchSign == null && abs(dpRaw) > PITCH_DELTA) {
                                 pitchSign = if (state.pose == Pose.UP && dpRaw < 0f) -1f
                                 else if (state.pose == Pose.DOWN && dpRaw > 0f) -1f
                                 else 1f
@@ -269,8 +272,8 @@ class FaceCaptureActivity : AppCompatActivity() {
                             if (state.pose == Pose.UP) {
                                 when {
                                     dp < -eps -> PoseStatus.WRONG_DIR to "Sai hướng — NGẨNG lên ↑"
-                                    kotlin.math.abs(dp) < PITCH_DELTA -> {
-                                        val remain = (PITCH_DELTA - kotlin.math.abs(dp)).coerceAtLeast(0f)
+                                    abs(dp) < PITCH_DELTA -> {
+                                        val remain = (PITCH_DELTA - abs(dp)).coerceAtLeast(0f)
                                         PoseStatus.NEED_MORE to "Chưa đủ — NGẨNG lên ≈ ${"%.0f".format(remain)}°"
                                     }
                                     else -> PoseStatus.OK to "Đúng — giữ yên…"
@@ -278,8 +281,8 @@ class FaceCaptureActivity : AppCompatActivity() {
                             } else { // DOWN
                                 when {
                                     dp > eps -> PoseStatus.WRONG_DIR to "Sai hướng — CÚI xuống ↓"
-                                    kotlin.math.abs(dp) < PITCH_DELTA -> {
-                                        val remain = (PITCH_DELTA - kotlin.math.abs(dp)).coerceAtLeast(0f)
+                                    abs(dp) < PITCH_DELTA -> {
+                                        val remain = (PITCH_DELTA - abs(dp)).coerceAtLeast(0f)
                                         PoseStatus.NEED_MORE to "Chưa đủ — CÚI xuống ≈ ${"%.0f".format(remain)}°"
                                     }
                                     else -> PoseStatus.OK to "Đúng — giữ yên…"
@@ -454,7 +457,7 @@ class FaceCaptureActivity : AppCompatActivity() {
 
         // Khi chưa có baseline (bước nhìn thẳng)
         if (pose == Pose.STRAIGHT || y0 == null || p0 == null) {
-            val ok = (kotlin.math.abs(yaw) <= 10f && kotlin.math.abs(pitch) <= 10f)
+            val ok = (abs(yaw) <= 10f && abs(pitch) <= 10f)
             val status = if (ok) PoseStatus.OK else PoseStatus.NEED_MORE
             val msg = if (ok) "Đúng tư thế — giữ yên…" else "Canh thẳng mặt vào giữa khung"
             // value dùng cho hiển thị còn thiếu ~độ (không cần ở bước này)
@@ -468,32 +471,32 @@ class FaceCaptureActivity : AppCompatActivity() {
         return when (pose) {
             Pose.LEFT -> when {
                 ys > eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — quay TRÁI thêm ←", ys)
-                kotlin.math.abs(ys) < YAW_DELTA -> {
-                    val remain = (YAW_DELTA - kotlin.math.abs(ys)).coerceAtLeast(0f)
+                abs(ys) < YAW_DELTA -> {
+                    val remain = (YAW_DELTA - abs(ys)).coerceAtLeast(0f)
                     Triple(PoseStatus.NEED_MORE, "Chưa đủ — quay TRÁI thêm ≈ ${"%.0f".format(remain)}°", ys)
                 }
                 else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ys)
             }
             Pose.RIGHT -> when {
                 ys < -eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — quay PHẢI thêm →", ys)
-                kotlin.math.abs(ys) < YAW_DELTA -> {
-                    val remain = (YAW_DELTA - kotlin.math.abs(ys)).coerceAtLeast(0f)
+                abs(ys) < YAW_DELTA -> {
+                    val remain = (YAW_DELTA - abs(ys)).coerceAtLeast(0f)
                     Triple(PoseStatus.NEED_MORE, "Chưa đủ — quay PHẢI thêm ≈ ${"%.0f".format(remain)}°", ys)
                 }
                 else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ys)
             }
             Pose.UP -> when {
                 ps < -eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — NGẨNG lên ↑", ps)
-                kotlin.math.abs(ps) < PITCH_DELTA -> {
-                    val remain = (PITCH_DELTA - kotlin.math.abs(ps)).coerceAtLeast(0f)
+                abs(ps) < PITCH_DELTA -> {
+                    val remain = (PITCH_DELTA - abs(ps)).coerceAtLeast(0f)
                     Triple(PoseStatus.NEED_MORE, "Chưa đủ — NGẨNG lên ≈ ${"%.0f".format(remain)}°", ps)
                 }
                 else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ps)
             }
             Pose.DOWN -> when {
                 ps > eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — CÚI xuống ↓", ps)
-                kotlin.math.abs(ps) < PITCH_DELTA -> {
-                    val remain = (PITCH_DELTA - kotlin.math.abs(ps)).coerceAtLeast(0f)
+                abs(ps) < PITCH_DELTA -> {
+                    val remain = (PITCH_DELTA - abs(ps)).coerceAtLeast(0f)
                     Triple(PoseStatus.NEED_MORE, "Chưa đủ — CÚI xuống ≈ ${"%.0f".format(remain)}°", ps)
                 }
                 else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ps)
