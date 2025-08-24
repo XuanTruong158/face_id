@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="ExtraText">
+
+    <!-- Avatar ở góc phải -->
+    <item
+        android:id="@+id/action_avatar"
+        android:title="Avatar"
+        android:icon="@drawable/ic_avatar" >
+    </item>  <!-- dùng icon có sẵn hoặc ảnh PNG/JPG của bạn -->
+    app:showAsAction="always"
+    app:iconTint="@android:color/white"/> <!-- xoá dòng này nếu bạn dùng ảnh màu và muốn giữ nguyên màu -->
+</menu>
