@@ -30,6 +30,7 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        mlModelBinding = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -48,6 +49,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.fragment)
+    implementation(libs.tensorflow.lite.metadata)
 
     val cameraxVersion = "1.4.2"
     implementation("androidx.camera:camera-core:$cameraxVersion")
@@ -62,8 +64,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("androidx.fragment:fragment-ktx:1.8.3")
 
-    implementation("org.tensorflow:tensorflow-lite:2.12.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.3.1")
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)

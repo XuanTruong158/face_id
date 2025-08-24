@@ -6,39 +6,53 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+
 object ApiClient {
+    // ĐỔI lại theo server của bạn
     private const val BASE_URL = "http://192.168.1.250:8000/api/"
 
-    private val logging by lazy{
-        HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
+    @Volatile
+    private var authToken: String? = null
+    fun setAuthToken(token: String?) { authToken = token }
+
+    private val logging: HttpLoggingInterceptor by lazy {
+        HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
     }
 
     private val defaultHeaders = Interceptor { chain ->
-        val request = chain.request().newBuilder()
+        val b = chain.request().newBuilder()
+            .addHeader("Accept", "application/json")
             .addHeader("Content-Type", "application/json")
-            .build()
-        chain.proceed(request)
+
+        authToken?.takeIf { it.isNotBlank() }?.let { t ->
+            b.addHeader("Authorization", "Bearer $t")
+        }
+        chain.proceed(b.build())
     }
 
-    private val httpClient by lazy {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
+    private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
+            .addInterceptor(defaultHeaders)
             .addInterceptor(logging)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
             .build()
     }
 
-    val authApi: AuthApi by lazy {
+    private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(AuthApi::class.java)
+    }
+
+    val authApi: AuthApi by lazy {
+        retrofit.create(AuthApi::class.java)
+    }
+
+    val faceApi: FaceDescriptorService by lazy {
+        retrofit.create(FaceDescriptorService::class.java)  // <- dùng INSTANCE retrofit
     }
 }
