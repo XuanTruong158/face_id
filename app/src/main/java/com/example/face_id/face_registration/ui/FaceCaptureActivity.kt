@@ -1,20 +1,25 @@
 package com.example.face_id.face_registration.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media
+import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -28,17 +33,25 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.face_id.face_registration.ui.FaceRegistrationSuccessActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.face_id.R
+import com.example.face_id.core.network.ApiClient
+import com.example.face_id.face_registration.model.FaceDescriptorRequest
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
+import androidx.core.graphics.scale
+import androidx.core.content.edit
 
 class FaceCaptureActivity : AppCompatActivity() {
 
@@ -64,8 +77,8 @@ class FaceCaptureActivity : AppCompatActivity() {
     private var baselineYaw: Float? = null
     private var baselinePitch: Float? = null
 
-    // Hiệu chuẩn dấu (để xử lý mirror/thiết bị đảo trục)
-    private var yawSign: Float? = null     // null = chưa biết; 1 hoặc -1 sau khi hiệu chuẩn
+    // Hiệu chuẩn dấu (mirror/đảo trục)
+    private var yawSign: Float? = null
     private var pitchSign: Float? = null
 
     // Ngưỡng & chống rung
@@ -74,14 +87,13 @@ class FaceCaptureActivity : AppCompatActivity() {
     private val HOLD_FRAMES = 4
     private var matchedFrames = 0
 
-    // Định nghĩa tư thế
+    // Lưu ảnh để upload
+    private val savedNames = mutableListOf<String>()
+    private val savedUris  = mutableListOf<Uri>()
+    private var isUploading = false
+
     private enum class Pose { STRAIGHT, LEFT, RIGHT, UP, DOWN }
-
-    private data class OrientationState(
-        val pose: Pose,
-        val instruction: String
-    )
-
+    private data class OrientationState(val pose: Pose, val instruction: String)
     private enum class PoseStatus { OK, NEED_MORE, WRONG_DIR }
 
     private val orientations = listOf(
@@ -106,7 +118,7 @@ class FaceCaptureActivity : AppCompatActivity() {
 
         backButton.setOnClickListener { finish() }
 
-        // ML Kit: ACCURATE để góc ổn định hơn
+        // ML Kit
         val detectorOpts = FaceDetectorOptions.Builder()
             .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
@@ -115,6 +127,19 @@ class FaceCaptureActivity : AppCompatActivity() {
         faceDetector = FaceDetection.getClient(detectorOpts)
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+
+        // Chốt user_id từ Intent vào prefs (nếu có)
+        intent.getStringExtra("user_id")?.let { uid ->
+            getSharedPreferences("face_id_prefs", MODE_PRIVATE)
+                .edit { putString("user_id", uid) }
+        }
+
+        val prefs = getSharedPreferences("face_id_prefs", MODE_PRIVATE)
+        val uidIntent = intent.getStringExtra("user_id")
+        val uidPrefs  = prefs.getString("user_id", null)
+        Log.d(TAG, "onCreate: intent.user_id=$uidIntent, prefs.user_id=$uidPrefs")
+        Toast.makeText(this, "user_id intent=${uidIntent ?: "null"}, prefs=${uidPrefs ?: "null"}", Toast.LENGTH_SHORT).show()
+
 
         // Quyền camera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -128,7 +153,7 @@ class FaceCaptureActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.Companion.getInstance(this)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
@@ -140,9 +165,11 @@ class FaceCaptureActivity : AppCompatActivity() {
                 scaleType = PreviewView.ScaleType.FILL_CENTER
             }
 
-            val parent = userPlaceholder.parent as ViewGroup
-            parent.addView(previewView, 0)
-            userPlaceholder.visibility = View.GONE
+            // Thay thế placeholder = preview
+            (userPlaceholder.parent as ViewGroup).apply {
+                addView(previewView, 0)
+                userPlaceholder.visibility = ImageView.GONE
+            }
 
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(previewView.surfaceProvider)
@@ -169,10 +196,12 @@ class FaceCaptureActivity : AppCompatActivity() {
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "bind camera error", e)
+                Toast.makeText(this, "Không khởi động được camera", Toast.LENGTH_SHORT).show()
             }
         }, ContextCompat.getMainExecutor(this))
     }
 
+    @SuppressLint("SetTextI18n")
     @OptIn(ExperimentalGetImage::class)
     private fun processFrame(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image ?: run { imageProxy.close(); return }
@@ -180,51 +209,39 @@ class FaceCaptureActivity : AppCompatActivity() {
 
         faceDetector.process(image)
             .addOnSuccessListener { faces ->
-                val state = orientations[currentOrientationIndex]
-                val prefix = if (capturedCount >= MAX_PHOTOS)
-                    "Hoàn tất chụp ảnh"
-                else
-                    "Vui lòng ${state.instruction}"
+                val idx = currentOrientationIndex.coerceIn(0, orientations.lastIndex)
+                val state = orientations[idx]
+                val prefix = if (capturedCount >= MAX_PHOTOS) "Hoàn tất chụp ảnh"
+                else "Vui lòng ${state.instruction}"
 
-                // Không thấy mặt: báo cần đưa mặt vào khung
                 if (faces.isEmpty()) {
                     matchedFrames = 0
                     runOnUiThread {
                         capturingText.setTextColor(0xFFF9A825.toInt()) // vàng
-                        capturingText.text = "$prefix\nChưa thấy khuôn mặt – đưa mặt vào giữa khung"
+                        capturingText.text = "$prefix\nChưa thấy khuôn mặt - đưa mặt vào giữa khung"
                     }
                     return@addOnSuccessListener
                 }
 
-                // Lấy góc quay hiện tại
                 val f = faces.first()
-                val yaw = f.headEulerAngleY    // dương: phải, âm: trái (theo ảnh)
-                val pitch = f.headEulerAngleX  // dương: ngẩng, âm: cúi
+                val yaw = f.headEulerAngleY
+                val pitch = f.headEulerAngleX
 
-                // === ĐÁNH GIÁ TƯ THẾ HIỆN TẠI ===
-                // Trạng thái: OK (đúng, đang giữ), NEED_MORE (đúng chiều nhưng chưa đủ góc),
-                // WRONG_DIR (nhầm chiều)
-
-                val eps = 3f // biên nhỏ để phân biệt nhầm chiều
+                val eps = 3f
                 val yaw0 = baselineYaw
                 val pitch0 = baselinePitch
 
-                // Kết quả đánh giá gồm: trạng thái + thông điệp gợi ý
                 val (status, hint) = when (state.pose) {
-                    // Bước 0: "nhìn thẳng" dùng ngưỡng tuyệt đối (chưa cần baseline)
                     Pose.STRAIGHT -> {
                         val ok = (abs(yaw) <= 10f && abs(pitch) <= 10f)
                         if (ok) PoseStatus.OK to "Đúng tư thế — giữ yên…"
                         else    PoseStatus.NEED_MORE to "Canh thẳng mặt vào giữa khung"
                     }
-
-                    // Trái/Phải: dùng độ lệch so với baseline và tự hiệu chỉnh dấu yawSign lần đầu
                     Pose.LEFT, Pose.RIGHT -> {
                         if (yaw0 == null) {
                             PoseStatus.NEED_MORE to "Chưa có baseline — hãy chụp tấm nhìn thẳng trước"
                         } else {
                             val dyRaw = yaw - yaw0
-                            // nếu chưa hiệu chuẩn dấu và thấy đi sai chiều rõ rệt → lật dấu
                             if (yawSign == null && abs(dyRaw) > YAW_DELTA) {
                                 yawSign = if (state.pose == Pose.LEFT && dyRaw > 0f) -1f
                                 else if (state.pose == Pose.RIGHT && dyRaw < 0f) -1f
@@ -242,7 +259,7 @@ class FaceCaptureActivity : AppCompatActivity() {
                                     }
                                     else -> PoseStatus.OK to "Đúng — giữ yên…"
                                 }
-                            } else { // RIGHT
+                            } else {
                                 when {
                                     dy < -eps -> PoseStatus.WRONG_DIR to "Sai hướng — quay PHẢI thêm →"
                                     abs(dy) < YAW_DELTA -> {
@@ -254,8 +271,6 @@ class FaceCaptureActivity : AppCompatActivity() {
                             }
                         }
                     }
-
-                    // Lên/Xuống: dùng độ lệch so baseline và tự hiệu chỉnh dấu pitchSign lần đầu
                     Pose.UP, Pose.DOWN -> {
                         if (pitch0 == null) {
                             PoseStatus.NEED_MORE to "Chưa có baseline — hãy chụp tấm nhìn thẳng trước"
@@ -278,7 +293,7 @@ class FaceCaptureActivity : AppCompatActivity() {
                                     }
                                     else -> PoseStatus.OK to "Đúng — giữ yên…"
                                 }
-                            } else { // DOWN
+                            } else {
                                 when {
                                     dp > eps -> PoseStatus.WRONG_DIR to "Sai hướng — CÚI xuống ↓"
                                     abs(dp) < PITCH_DELTA -> {
@@ -292,12 +307,11 @@ class FaceCaptureActivity : AppCompatActivity() {
                     }
                 }
 
-                // === HIỂN THỊ PHẢN HỒI & GIỮ KHUNG HÌNH ===
                 runOnUiThread {
                     val color = when (status) {
-                        PoseStatus.OK        -> 0xFF2E7D32.toInt()  // xanh lá
-                        PoseStatus.NEED_MORE -> 0xFFF9A825.toInt()  // vàng
-                        PoseStatus.WRONG_DIR -> 0xFFC62828.toInt()  // đỏ
+                        PoseStatus.OK        -> 0xFF2E7D32.toInt()
+                        PoseStatus.NEED_MORE -> 0xFFF9A825.toInt()
+                        PoseStatus.WRONG_DIR -> 0xFFC62828.toInt()
                     }
                     capturingText.setTextColor(color)
                     val holdInfo = if (status == PoseStatus.OK && !isCapturing)
@@ -307,7 +321,6 @@ class FaceCaptureActivity : AppCompatActivity() {
 
                 if (isCapturing || capturedCount >= MAX_PHOTOS) return@addOnSuccessListener
 
-                // Nếu đúng tư thế: tăng bộ đếm giữ khung hình; đủ N khung thì chụp
                 if (status == PoseStatus.OK) {
                     matchedFrames++
                     if (matchedFrames >= HOLD_FRAMES) {
@@ -321,49 +334,6 @@ class FaceCaptureActivity : AppCompatActivity() {
             }
             .addOnFailureListener { Log.w(TAG, "face detect fail", it) }
             .addOnCompleteListener { imageProxy.close() }
-    }
-
-
-    /** Kiểm tra tư thế, có hiệu chuẩn dấu tự động cho bước trái/phải/lên/xuống đầu tiên */
-    private fun isPoseSatisfied(pose: Pose, yaw: Float, pitch: Float): Boolean {
-        return when (pose) {
-            Pose.STRAIGHT -> {
-                // Bước baseline: dùng ngưỡng tuyệt đối
-                abs(yaw) <= 10f && abs(pitch) <= 10f
-            }
-            Pose.LEFT, Pose.RIGHT -> {
-                val y0 = baselineYaw ?: return false
-                val dyRaw = yaw - y0
-
-                // Lần ĐẦU gặp bước trái/phải → tự hiệu chuẩn dấu
-                if (yawSign == null && abs(dyRaw) > YAW_DELTA) {
-                    yawSign = if (pose == Pose.LEFT && dyRaw > 0f) -1f
-                    else if (pose == Pose.RIGHT && dyRaw < 0f) -1f
-                    else 1f
-                }
-                val sign = yawSign ?: 1f
-                val dy = dyRaw * sign
-
-                // Sau chuẩn hóa: trái = âm, phải = dương
-                if (pose == Pose.LEFT)  dy <= -YAW_DELTA else dy >= YAW_DELTA
-            }
-            Pose.UP, Pose.DOWN -> {
-                val p0 = baselinePitch ?: return false
-                val dpRaw = pitch - p0
-
-                // Lần ĐẦU gặp bước lên/xuống → tự hiệu chuẩn dấu
-                if (pitchSign == null && abs(dpRaw) > PITCH_DELTA) {
-                    pitchSign = if (pose == Pose.UP && dpRaw < 0f) -1f
-                    else if (pose == Pose.DOWN && dpRaw > 0f) -1f
-                    else 1f
-                }
-                val sign = pitchSign ?: 1f
-                val dp = dpRaw * sign
-
-                // Sau chuẩn hóa: lên = dương, xuống = âm
-                if (pose == Pose.UP) dp >= PITCH_DELTA else dp <= -PITCH_DELTA
-            }
-        }
     }
 
     /** Chụp & LƯU ảnh vào MediaStore (DCIM/FaceCaptures) */
@@ -380,8 +350,8 @@ class FaceCaptureActivity : AppCompatActivity() {
             }
         }
 
-        val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val output = ImageCapture.OutputFileOptions.Builder(contentResolver, uri, values).build()
+        val collection: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val output = ImageCapture.OutputFileOptions.Builder(contentResolver, collection, values).build()
 
         capture.takePicture(
             output,
@@ -389,37 +359,49 @@ class FaceCaptureActivity : AppCompatActivity() {
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(result: ImageCapture.OutputFileResults) {
                     capturedCount++
-                    // Tấm đầu: đặt baseline
+
+                    savedNames.add(name)
+                    result.savedUri?.let { savedUris.add(it) }
+
                     if (capturedCount == 1) {
                         baselineYaw = yawNow
                         baselinePitch = pitchNow
                     }
-                    // Tư thế tiếp theo
                     if (currentOrientationIndex < orientations.size - 1) currentOrientationIndex++
 
                     updateProgress()
                     isCapturing = false
 
-                    if (capturedCount >= MAX_PHOTOS) navigateToSuccess()
+                    Log.d(TAG, "capturedCount=$capturedCount, savedUris=${savedUris.size}, savedNames=${savedNames.size}")
+
+                    if (capturedCount >= MAX_PHOTOS) {
+                        registerFaceAndNavigate()
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
                     Log.e(TAG, "save error", exception)
                     isCapturing = false
+                    Toast.makeText(this@FaceCaptureActivity, "Lưu ảnh thất bại", Toast.LENGTH_SHORT).show()
                 }
             }
         )
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateProgress() {
         val progress = (capturedCount * 100) / MAX_PHOTOS
-        captureTitle.text = "Đang chụp ảnh ($capturedCount/$MAX_PHOTOS)"
-        progressBar.progress = progress
-        progressPercent.text = "$progress%"
-        if (capturedCount >= MAX_PHOTOS) {
-            capturingText.text = "Hoàn tất chụp ảnh"
-        } else {
-            capturingText.text = "Vui lòng ${orientations[currentOrientationIndex].instruction}"
+        runOnUiThread {
+            captureTitle.text = "Đang chụp ảnh ($capturedCount/$MAX_PHOTOS)"
+            progressBar.progress = progress
+            progressPercent.text = "$progress%"
+
+            if (capturedCount >= MAX_PHOTOS) {
+                capturingText.text = "Hoàn tất chụp ảnh"
+            } else {
+                val idx = currentOrientationIndex.coerceIn(0, orientations.lastIndex)
+                capturingText.text = "Vui lòng ${orientations[idx].instruction}"
+            }
         }
     }
 
@@ -447,61 +429,127 @@ class FaceCaptureActivity : AppCompatActivity() {
         }
     }
 
-    private fun evaluatePose(
-        pose: Pose,
-        yaw: Float,
-        pitch: Float
-    ): Triple<PoseStatus, String, Float> {
-        val y0 = baselineYaw
-        val p0 = baselinePitch
+    // ====== Upload 5 ảnh lên server rồi chuyển trang ======
 
-        // Khi chưa có baseline (bước nhìn thẳng)
-        if (pose == Pose.STRAIGHT || y0 == null || p0 == null) {
-            val ok = (abs(yaw) <= 10f && abs(pitch) <= 10f)
-            val status = if (ok) PoseStatus.OK else PoseStatus.NEED_MORE
-            val msg = if (ok) "Đúng tư thế — giữ yên…" else "Canh thẳng mặt vào giữa khung"
-            // value dùng cho hiển thị còn thiếu ~độ (không cần ở bước này)
-            return Triple(status, msg, 0f)
+    private fun findUriByDisplayName(displayName: String): Uri? {
+        val projection = arrayOf(Media._ID, Media.DISPLAY_NAME, Media.RELATIVE_PATH)
+        val selection = "${Media.DISPLAY_NAME}=?"
+        val args = arrayOf(displayName)
+        contentResolver.query(Media.EXTERNAL_CONTENT_URI, projection, selection, args, "${Media.DATE_ADDED} DESC").use { c ->
+            if (c != null && c.moveToFirst()) {
+                val idCol = c.getColumnIndexOrThrow(Media._ID)
+                val id = c.getLong(idCol)
+                return Uri.withAppendedPath(Media.EXTERNAL_CONTENT_URI, id.toString())
+            }
+        }
+        return null
+    }
+
+    private suspend fun readBytesFromUri(uri: Uri): ByteArray? = withContext(Dispatchers.IO) {
+        return@withContext try { contentResolver.openInputStream(uri)?.use { it.readBytes() } }
+        catch (e: Exception) { Log.e(TAG, "readBytesFromUri: ${e.message}", e); null }
+    }
+
+    private suspend fun readBytesFromName(name: String): ByteArray? {
+        val uri = findUriByDisplayName(name) ?: return null
+        return readBytesFromUri(uri)
+    }
+
+    /** Nén/resize về JPEG cạnh dài <= maxDim, quality mặc định 80 */
+    private fun toJpegUnderMax(bytes: ByteArray, maxDim: Int = 720, quality: Int = 80): ByteArray {
+        // 1) đọc bounds
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+        var w = bounds.outWidth
+        var h = bounds.outHeight
+        if (w <= 0 || h <= 0) return bytes
+
+        // 2) sample theo lũy thừa 2
+        var inSample = 1
+        while ((w / inSample) > maxDim || (h / inSample) > maxDim) inSample *= 2
+
+        val opts = BitmapFactory.Options().apply {
+            inSampleSize = inSample
+            inPreferredConfig = Bitmap.Config.ARGB_8888
+        }
+        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts) ?: return bytes
+
+        // 3) scale chính xác
+        w = bmp.width; h = bmp.height
+        val scale = minOf(maxDim / w.toFloat(), maxDim / h.toFloat(), 1f)
+        val scaled = if (scale < 1f)
+            bmp.scale((w * scale).toInt(), (h * scale).toInt())
+        else bmp
+
+        // 4) nén JPEG
+        val out = ByteArrayOutputStream()
+        scaled.compress(Bitmap.CompressFormat.JPEG, quality.coerceIn(40, 100), out)
+        if (scaled !== bmp) bmp.recycle()
+        val result = out.toByteArray()
+        out.close()
+        return result
+    }
+
+    private fun registerFaceAndNavigate() {
+        if (isUploading) return
+        isUploading = true
+
+        val prefs = getSharedPreferences("face_id_prefs", MODE_PRIVATE)
+        var userId: String? = intent.getStringExtra("user_id")
+        if (userId.isNullOrBlank()) {
+            userId = getSharedPreferences("face_id_prefs", MODE_PRIVATE)
+                .getString("user_id", null)
+        }
+        if (userId.isNullOrBlank()) {
+            Toast.makeText(this, "Thiếu userId. Hãy đăng nhập lại.", Toast.LENGTH_LONG).show()
+            return
         }
 
-        val ys = (yaw - y0) * (yawSign ?: 1f)
-        val ps = (pitch - p0) * (pitchSign ?: 1f)
+        lifecycleScope.launch {
+            try {
+                val base64List = mutableListOf<String>()
+                val total = minOf(savedUris.size.coerceAtLeast(savedNames.size), MAX_PHOTOS)
 
-        val eps = 3f // biên nhỏ để phân biệt nhầm chiều
-        return when (pose) {
-            Pose.LEFT -> when {
-                ys > eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — quay TRÁI thêm ←", ys)
-                abs(ys) < YAW_DELTA -> {
-                    val remain = (YAW_DELTA - abs(ys)).coerceAtLeast(0f)
-                    Triple(PoseStatus.NEED_MORE, "Chưa đủ — quay TRÁI thêm ≈ ${"%.0f".format(remain)}°", ys)
+                for (i in 0 until total) {
+                    val raw = when {
+                        i < savedUris.size  -> readBytesFromUri(savedUris[i])
+                        i < savedNames.size -> readBytesFromName(savedNames[i])
+                        else -> null
+                    } ?: continue
+
+                    // NÉN/RESIZE trước khi encode
+                    val jpg = toJpegUnderMax(raw, maxDim = 720, quality = 80)
+                    val b64 = Base64.encodeToString(jpg, Base64.NO_WRAP)
+                    base64List.add(b64)
                 }
-                else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ys)
-            }
-            Pose.RIGHT -> when {
-                ys < -eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — quay PHẢI thêm →", ys)
-                abs(ys) < YAW_DELTA -> {
-                    val remain = (YAW_DELTA - abs(ys)).coerceAtLeast(0f)
-                    Triple(PoseStatus.NEED_MORE, "Chưa đủ — quay PHẢI thêm ≈ ${"%.0f".format(remain)}°", ys)
+
+                if (base64List.size < MAX_PHOTOS) {
+                    Toast.makeText(this@FaceCaptureActivity, "Chụp chưa đủ ảnh để đăng ký", Toast.LENGTH_LONG).show()
+                    isUploading = false
+                    return@launch
                 }
-                else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ys)
-            }
-            Pose.UP -> when {
-                ps < -eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — NGẨNG lên ↑", ps)
-                abs(ps) < PITCH_DELTA -> {
-                    val remain = (PITCH_DELTA - abs(ps)).coerceAtLeast(0f)
-                    Triple(PoseStatus.NEED_MORE, "Chưa đủ — NGẨNG lên ≈ ${"%.0f".format(remain)}°", ps)
+
+                val req = FaceDescriptorRequest(
+                    userId = userId,
+                    descriptors = base64List,
+                    algorithm = "raw_base64_v1"
+                )
+
+                val res = withContext(Dispatchers.IO) { ApiClient.faceApi.registerFace(req) }
+                if (!res.isSuccessful) {
+                    Log.e(TAG, "registerFace fail: code=${res.code()} body=${res.errorBody()?.string()}")
+                    Toast.makeText(this@FaceCaptureActivity, "Đăng ký khuôn mặt thất bại: ${res.code()}", Toast.LENGTH_LONG).show()
+                    isUploading = false
+                    return@launch
                 }
-                else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ps)
+
+                navigateToSuccess()
+            } catch (e: Exception) {
+                Log.e(TAG, "registerFace error: ${e.message}", e)
+                Toast.makeText(this@FaceCaptureActivity, "Lỗi kết nối server", Toast.LENGTH_LONG).show()
+            } finally {
+                isUploading = false
             }
-            Pose.DOWN -> when {
-                ps > eps -> Triple(PoseStatus.WRONG_DIR, "Sai hướng — CÚI xuống ↓", ps)
-                abs(ps) < PITCH_DELTA -> {
-                    val remain = (PITCH_DELTA - abs(ps)).coerceAtLeast(0f)
-                    Triple(PoseStatus.NEED_MORE, "Chưa đủ — CÚI xuống ≈ ${"%.0f".format(remain)}°", ps)
-                }
-                else -> Triple(PoseStatus.OK, "Đúng — giữ yên…", ps)
-            }
-            else -> Triple(PoseStatus.NEED_MORE, "Canh thẳng mặt vào giữa khung", 0f)
         }
     }
 

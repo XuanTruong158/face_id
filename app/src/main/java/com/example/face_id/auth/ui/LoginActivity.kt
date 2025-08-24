@@ -1,5 +1,6 @@
 package com.example.face_id.auth.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -10,6 +11,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.face_id.MainMenuSvActivity
 import com.example.face_id.R
 import com.example.face_id.auth.model.LoginRequest
 import com.example.face_id.core.network.ApiClient
@@ -31,6 +33,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var btnLogin: Button
     private var isPasswordVisible = false
+
+    private val TAG = "Login"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener { handleLogin() }
     }
 
+    @SuppressLint("UseKtx")
     private fun handleLogin() {
         val code = etStudentId.text.toString().trim()
         val password = etPasswordCustom.text.toString().trim()
@@ -84,41 +89,47 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val res = ApiClient.authApi.login(LoginRequest(code, password))
                 if (!res.isSuccessful) {
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Đăng nhập thất bại: ${res.code()}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    android.util.Log.e(TAG, "HTTP ${res.code()} ${res.message()}")
+                    Toast.makeText(this@LoginActivity, "Đăng nhập thất bại: ${res.code()}", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
 
-                val body = res.body()
-                if (body == null) {
+                val body = res.body() ?: run {
                     Toast.makeText(this@LoginActivity, "Phản hồi rỗng từ server", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
 
-                // Lưu token (KHÔNG dùng extension edit { } để tránh bug K2)
-                val prefs = getSharedPreferences("face_id_prefs", MODE_PRIVATE)
-                prefs.edit().putString("auth_token", body.token).apply()
-
-                // Điều hướng theo role + trạng thái khuôn mặt
-                when (body.user.role.lowercase()) {
-                    "student" -> {
-                        val next = if (body.user.faceRegistered)
-                            WelcomeActivity::class.java
-                        else
-                            FaceRegistration::class.java
-                        startActivity(Intent(this@LoginActivity, next))
-                    }
-                    "lecturer" -> startActivity(Intent(this@LoginActivity, MainActivityGVMenu::class.java))
-                    "admin" -> startActivity(Intent(this@LoginActivity, WelcomeActivity::class.java))
-                    else -> Toast.makeText(this@LoginActivity, "Vai trò không hợp lệ", Toast.LENGTH_SHORT).show()
+                val uid = body.user.resolvedId
+                android.util.Log.d(TAG, "User json = ${com.google.gson.Gson().toJson(body.user)}")
+                if (uid.isNullOrBlank()) {
+                    Toast.makeText(this@LoginActivity, "Thiếu userId trong phản hồi", Toast.LENGTH_SHORT).show()
+                    return@launch
                 }
+
+                // Lưu ngay (commit để chắc chắn trước khi startActivity)
+                val prefs = getSharedPreferences("face_id_prefs", MODE_PRIVATE)
+                prefs.edit()
+                    .putString("auth_token", body.token)
+                    .putString("user_id", uid)
+                    .commit()
+                android.util.Log.d(TAG, "Saved prefs user_id=${prefs.getString("user_id", null)}")
+
+                ApiClient.setAuthToken(body.token)
+
+                val next = if (body.user.faceRegistered) MainMenuSvActivity::class.java
+                else FaceRegistration::class.java
+
+                startActivity(
+                    Intent(this@LoginActivity, next)
+                        .putExtra("user_id", uid)
+                        .putExtra("user_name", body.user.name)
+                        .putExtra("user_role", body.user.role)
+                        .putExtra("user_face_registered", body.user.faceRegistered)
+                        .putExtra("user_token", body.token)
+                )
                 finish()
             } catch (e: Exception) {
-                e.printStackTrace()
-                android.util.Log.e("Login", "Call failed: ${e.message}")
+                android.util.Log.e(TAG, "Call failed: ${e.message}", e)
                 Toast.makeText(this@LoginActivity, "Lỗi kết nối server", Toast.LENGTH_SHORT).show()
             } finally {
                 btnLogin.isEnabled = true

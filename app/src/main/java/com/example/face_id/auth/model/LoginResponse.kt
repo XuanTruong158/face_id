@@ -1,6 +1,8 @@
 package com.example.face_id.auth.model
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginResponse(
-    val token: String,
-    val user: UserInfo
+    @SerializedName("token") val token: String,
+    @SerializedName("user")  val user: UserDto
 )
