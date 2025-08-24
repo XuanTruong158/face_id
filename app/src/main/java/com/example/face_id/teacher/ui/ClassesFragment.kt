@@ -1,62 +1,84 @@
 package com.example.face_id.teacher.ui
 
+import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.face_id.teacher.ui.adapter.ClassAdapter
+import com.example.face_id.databinding.ActivityMainGvBinding
 import com.example.face_id.teacher.model.ClassItem
-import com.example.face_id.databinding.FragmentClassesBinding
+import com.example.face_id.teacher.repository.TeacherRepository
+import com.example.face_id.teacher.ui.adapter.ClassesAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ClassesFragment : Fragment() {
-    private var _binding: FragmentClassesBinding? = null
+
+    private var _binding: ActivityMainGvBinding? = null
     private val binding get() = _binding!!
 
+    private val repo = TeacherRepository()
+    private lateinit var adapter: ClassesAdapter
+    private var fullData: List<ClassItem> = emptyList()
 
-    private lateinit var adapter: ClassAdapter
-
+    // TODO: thay bằng _id giáo viên thật
+    private val teacherId = "GV001"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentClassesBinding.inflate(inflater, container, false)
+        _binding = ActivityMainGvBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecycler()
+        setupActions()
+        loadClasses()
+    }
 
-
-        val data = mutableListOf(
-            ClassItem(title = "Android", code = "CSE123_02", desc = "Hiện đang quản lý 2 lớp"),
-            ClassItem(title = "Công nghệ Web", code = "CSE123_02", desc = "Hiện đang quản lý 2 lớp")
+    private fun setupRecycler() {
+        adapter = ClassesAdapter(
+            onClick = { item -> openClassMenu(item) },
+            onMore = { _, _ -> Toast.makeText(requireContext(), "Tùy chọn…", Toast.LENGTH_SHORT).show() }
         )
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = adapter
+    }
 
+    private fun setupActions() {
+        binding.fabAdd.setOnClickListener {
+            Toast.makeText(requireContext(), "Thêm lớp (TODO)", Toast.LENGTH_SHORT).show()
+        }
+        // Nếu bạn thêm id etSearch cho EditText thì mở filter tương tự Activity:
+        // binding.etSearch.addTextChangedListener { text -> ... }
+    }
 
-        adapter = ClassAdapter(data)
-        binding.rcvClasses.layoutManager = LinearLayoutManager(requireContext())
-        binding.rcvClasses.adapter = adapter
-
-
-        binding.edtSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filter(s?.toString() ?: "")
+    private fun loadClasses(term: String? = null) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val result = repo.getClasses(teacherId, term)
+            withContext(Dispatchers.Main) {
+                result.onSuccess { list ->
+                    fullData = list
+                    adapter.submitList(list)
+                }.onFailure {
+                    Toast.makeText(requireContext(), it.message ?: "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show()
+                }
             }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-
-        binding.tvSeeAll.setOnClickListener {
-// TODO: xử lý xem tất cả
         }
     }
 
+    private fun openClassMenu(item: ClassItem) {
+        // Ví dụ điều hướng Activity khác:
+        // startActivity(Intent(requireContext(), SessionActivity::class.java).putExtra("classId", item.id))
+        Toast.makeText(requireContext(), "Mở: ${item.courseName} - ${item.classCode}", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

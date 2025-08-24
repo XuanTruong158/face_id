@@ -1,42 +1,86 @@
 package com.example.face_id.teacher.ui
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.commit
-import com.example.face_id.teacher.ui.ClassesFragment
-import com.example.face_id.R
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.face_id.databinding.ActivityMainGvBinding
+import com.example.face_id.teacher.model.ClassItem
+import com.example.face_id.teacher.repository.TeacherRepository
+import com.example.face_id.teacher.ui.adapter.ClassesAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainActivityGVMenu : AppCompatActivity() {
+class ActivityMainGV : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainGvBinding
-    private lateinit var toggle: ActionBarDrawerToggle
+    private val repo = TeacherRepository()
+    private lateinit var adapter: ClassesAdapter
+    private var fullData: List<ClassItem> = emptyList()
 
+    // TODO: thay bằng _id giáo viên thật (ObjectId string) hoặc theo backend bạn định nghĩa
+    private val teacherId = "GV001"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainGvBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupRecycler()
+        setupActions()
+        loadClasses()
+    }
 
-        setSupportActionBar(binding.toolbar)
-        toggle = ActionBarDrawerToggle(
-            this, binding.drawerLayout, binding.toolbar,
-            R.string.nav_open, R.string.nav_close
+    private fun setupRecycler() {
+        adapter = ClassesAdapter(
+            onClick = { item -> openClassMenu(item) },
+            onMore = { _, _ -> Toast.makeText(this, "Tùy chọn…", Toast.LENGTH_SHORT).show() }
         )
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
+    }
 
+    private fun setupActions() {
+        // Nút thêm lớp (nếu bạn muốn dùng)
+        binding.fabAdd.setOnClickListener {
+            Toast.makeText(this, "Thêm lớp (TODO)", Toast.LENGTH_SHORT).show()
+        }
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(R.id.fragment_container, ClassesFragment())
+        // (Tuỳ chọn) nếu bạn đặt id cho ô tìm kiếm là etSearch,
+        // có thể bật filter như bên dưới:
+        // binding.etSearch.addTextChangedListener { text ->
+        //     val key = text?.toString()?.trim()?.lowercase().orEmpty()
+        //     val filtered = if (key.isBlank()) fullData
+        //     else fullData.filter {
+        //         it.courseName.lowercase().contains(key) ||
+        //         it.classCode.lowercase().contains(key)
+        //     }
+        //     adapter.submitList(filtered)
+        // }
+    }
+
+    private fun loadClasses(term: String? = null) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = repo.getClasses(teacherId, term)
+            withContext(Dispatchers.Main) {
+                result.onSuccess { list ->
+                    fullData = list
+                    adapter.submitList(list)
+                }.onFailure {
+                    Toast.makeText(this@ActivityMainGV, it.message ?: "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+    }
 
+    private fun openClassMenu(item: ClassItem) {
+        // Điều hướng đến màn menu lớp/điểm danh của bạn
+        // Ví dụ mở StudentsActivity hoặc SessionActivity tuỳ chọn:
+        // startActivity(Intent(this, StudentsActivity::class.java).putExtra("classId", item.id))
 
-        binding.fabAdd.setOnClickListener {
-// TODO: Mở màn hình tạo lớp mới
-        }
+        Toast.makeText(this, "Mở: ${item.courseName} - ${item.classCode}", Toast.LENGTH_SHORT).show()
     }
 }
