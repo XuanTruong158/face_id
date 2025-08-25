@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.example.face_id.databinding.ActivityMainSvBinding
-import com.example.face_id.ui.HomeFragment   // Fragment màn “Lớp học” bạn đã có
+
 
 class MainMenuSvActivity : AppCompatActivity() {
 
