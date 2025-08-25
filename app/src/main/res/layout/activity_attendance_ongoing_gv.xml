@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <!-- App bar bo góc + bóng -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@drawable/rounded_bottom_shadow"
+        android:paddingHorizontal="16dp"
+        android:gravity="bottom"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_back_36"
+                android:contentDescription="Quay lại"/>
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Điểm danh"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Nội dung -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Nút trạng thái: đang diễn ra -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOngoing"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:enabled="false"
+                android:text="Điểm danh đang diễn ra..."
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#C8DAFF"/>
+
+            <!-- Đồng hồ -->
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="15:00"
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Thống kê tham dự -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#E0E0E0"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_users"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Thống kê tham dự"
+                            android:textStyle="bold"
+                            android:textColor="#000"/>
+                    </LinearLayout>
+
+                    <!-- Hàng số liệu -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="4"
+                        android:paddingTop="8dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tvTotal" android:text="8" android:textSize="18sp" android:textStyle="bold"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tổng số" android:textColor="#777"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tvPresent" android:text="3" android:textStyle="bold" android:textSize="18sp" android:textColor="#2E7D32"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Có mặt" android:textColor="#777"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tvLate" android:text="5" android:textStyle="bold" android:textSize="18sp" android:textColor="#EF6C00"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Muộn" android:textColor="#777"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tvAbsent" android:text="0" android:textStyle="bold" android:textSize="18sp" android:textColor="#C62828"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Vắng" android:textColor="#777"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Tỉ lệ tham dự -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Tỉ lệ tham dự"
+                        android:textColor="#777"/>
+
+                    <ProgressBar
+                        android:id="@+id/progressAttendance"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="4dp"
+                        android:max="100"
+                        android:progress="36"
+                        android:progressDrawable="@drawable/progress_attendance"/>
+
+                    <TextView
+                        android:id="@+id/tvPercent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="36%"
+                        android:textColor="#777"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Tìm kiếm + “tab” lọc -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/rounded_search"
+                    android:paddingHorizontal="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search_24"
+                        app:tint="#888"/>
+
+                    <EditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:hint="Tìm kiếm sinh viên"
+                        android:singleLine="true"
+                        android:background="@android:color/transparent"/>
+                </LinearLayout>
+
+                <!-- Segment buttons như tab -->
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/tgFilters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:weightSum="3"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:checkedButton="@id/btnAll">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAll"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                android:text="@string/chip_all"
+                android:textAllCaps="false"
+                app:cornerRadius="10dp"
+                app:backgroundTint="@color/filter_btn_bg"
+                android:textColor="@color/filter_btn_text"
+                app:strokeColor="@color/filter_btn_stroke"
+                app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPresent"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                android:text="@string/chip_present"
+                android:textAllCaps="false"
+                app:cornerRadius="10dp"
+                app:backgroundTint="@color/filter_btn_bg"
+                android:textColor="@color/filter_btn_text"
+                app:strokeColor="@color/filter_btn_stroke"
+                app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAbsent"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:text="@string/chip_absent"
+                    android:textAllCaps="false"
+                    app:cornerRadius="10dp"
+                    app:backgroundTint="@color/filter_btn_bg"
+                    android:textColor="@color/filter_btn_text"
+                    app:strokeColor="@color/filter_btn_stroke"
+                    app:strokeWidth="1dp"/>
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+
+        </LinearLayout>
+
+            <!-- Danh sách sinh viên -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#E0E0E0"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Danh sách sinh viên"
+                        android:textStyle="bold"
+                        android:textColor="#000"
+                        android:paddingBottom="8dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rcvStudents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_student_attendance"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
