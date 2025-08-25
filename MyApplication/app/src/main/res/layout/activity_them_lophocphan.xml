@@ -1,165 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp"
+    android:background="@android:color/white"
     tools:context=".Add.ThemLophocphan">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <!-- Tiêu đề -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TẠO LỚP HỌC PHẦN"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/teal_700"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Name (Tên lớp học phần) -->
+        <EditText
+            android:id="@+id/edtName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tên lớp học phần"
+            android:inputType="textCapWords"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Course ID (Chọn môn học) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chọn môn học"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerCourse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Lecturer ID (Chọn giảng viên) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chọn giảng viên"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerLecturer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Semester -->
+        <EditText
+            android:id="@+id/edtSemester"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Học kỳ (ví dụ: HK1, HK2)"
+            android:inputType="text"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Year -->
+        <EditText
+            android:id="@+id/edtYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Năm học (VD: 2025)"
+            android:inputType="number"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Button Tạo + Hủy -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="#D4F8F8"
-            android:elevation="4dp"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="horizontal"
+            android:gravity="end">
 
-            <!-- Tiêu đề -->
-            <TextView
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/btnTao"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingBottom="16dp"
-                android:text="Tạo lớp học phần"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:text="TẠO"
+                android:backgroundTint="@color/teal_700"
+                android:textColor="@android:color/white" />
 
-            <!-- Mã lớp + Tên lớp -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnHuy"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <EditText
-                    android:id="@+id/edtMaLopHP"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Mã lớp học phần" />
-
-                <Space
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/edtTenLopHP"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Tên lớp học phần" />
-            </LinearLayout>
-
-            <!-- Môn học + Ngày bắt đầu -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <Spinner
-                    android:id="@+id/spinnerMonhocHP"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Space
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/edtNgayBatDau"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="Ngày bắt đầu" />
-            </LinearLayout>
-
-            <!-- Giảng viên + Ngày kết thúc -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <Spinner
-                    android:id="@+id/spinnerGiangVienHP"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Space
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/edtNgayKetThuc"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="Ngày kết thúc" />
-            </LinearLayout>
-
-            <!-- Mô tả -->
-            <EditText
-                android:id="@+id/edtMoTaHP"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginBottom="12dp"
-                android:gravity="top"
-                android:hint="Mô tả lớp học phần"
-                android:inputType="textMultiLine" />
-
-            <!-- Số tín chỉ -->
-            <EditText
-                android:id="@+id/edtSoTinChi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Số tín chỉ"
-                android:inputType="number" />
-
-            <!-- Buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnTaoLopHP"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/teal_700"
-                    android:text="Tạo lớp học"
-                    android:textColor="@android:color/white" />
-
-                <Space
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/btnCancelLopHP"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Huỷ" />
-            </LinearLayout>
+                android:text="HUỶ" />
         </LinearLayout>
-    </ScrollView>
 
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

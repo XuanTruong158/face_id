@@ -37,31 +37,30 @@ class ThemSinhvien : AppCompatActivity() {
                 edtPasswordSV.error = "Mật khẩu không khớp"
                 edtConfirmPasswordSV.error = "Mật khẩu không khớp"
             } else {
-                // Nếu mật khẩu khớp, thực hiện đăng ký tài khoản
-                // goi api dang ki
-                // code
-//                val user: User = User(null, edtHotenSV.toString(), edtEmailSV.toString(), edtPasswordSV.toString(),
-//                    edtMaSV.toString(),
-//                    role)
-                val user:User = User(null, "Long", "sinhvien1@gmail.com","123456", "sv01", "student")
+
+                val user: User = User(null, edtHotenSV.text.toString(), edtEmailSV.text.toString(), edtPasswordSV.text.toString(),
+                    edtMaSV.toString(),
+                    role)
                 lifecycleScope.launch {
                     try {
-                        val response = RetrofitInstance.api.createUser(user)
+                        val response = RetrofitInstance.apiUser.createUser(user)
                         if (response.isSuccessful) {
-                            // Xử lý thành công
 
                             Toast.makeText(this@ThemSinhvien, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
-
-
-                        } else {
-
+                            finish()
                         }
+
                         } catch (e: Exception) {
                             e.printStackTrace()
 
                     }
                 }
             }
+        }
+
+        btnCancelSV.setOnClickListener {
+            finish()
+
         }
     }
 

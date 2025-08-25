@@ -65,30 +65,19 @@
                 android:layout_marginBottom="10dp"
                 app:srcCompat="@drawable/check_mark" />
             <ImageView
-                android:id="@+id/imgxoa"
+                android:id="@+id/imgsua"
                 android:layout_width="35dp"
                 android:layout_height="24dp"
                 android:layout_marginBottom="10dp"
                 app:srcCompat="@drawable/suaicon" />
             <ImageView
-                android:id="@+id/imgsua"
+                android:id="@+id/imgxoa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 app:srcCompat="@drawable/deletead" />
 
-            <!--            <ImageView-->
-            <!--                android:id="@+id/imgfixaccout"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginBottom="10dp"-->
-            <!--                app:srcCompat="@drawable/fixmodify" />-->
 
-            <!--            <ImageView-->
-            <!--                android:id="@+id/imgdeleteaccout"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                app:srcCompat="@drawable/deletead" />-->
         </LinearLayout>
 
     </LinearLayout>

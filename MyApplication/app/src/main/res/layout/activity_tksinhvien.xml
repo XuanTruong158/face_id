@@ -18,10 +18,19 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         android:layout_margin="5dp"/>
+<!--    // nestscroll-->
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
 
         android:id="@+id/rcv_tk"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:paddingBottom="100dp"/>
+    </androidx.core.widget.NestedScrollView>
+
 </LinearLayout>

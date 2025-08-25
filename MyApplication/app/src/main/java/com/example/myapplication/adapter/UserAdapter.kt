@@ -70,7 +70,7 @@ class UserAdapter : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
         holder.bind(list[position])
         holder.itemView.setOnClickListener {
-            Toast.makeText(holder.itemView.context, list[position].name, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(holder.itemView.context, list[position].name, Toast.LENGTH_SHORT).show()
         }
         holder.btnxoa.setOnClickListener {
             listener?.onXoaClick(list[position])

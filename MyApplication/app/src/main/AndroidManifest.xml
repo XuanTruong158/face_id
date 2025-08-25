@@ -35,14 +35,15 @@
             android:name=".Add.ThemSinhvien"
             android:exported="false" />
         <activity
+            android:name=".Add.ThemGiangVien"
+            android:exported="false" />
+        <activity
             android:name=".Add.ThemMonhoc"
             android:exported="false" />
         <activity
             android:name=".ListMonhoc"
             android:exported="false" />
-        <activity
-            android:name=".TKGiangVien"
-            android:exported="false" />
+
         <activity
             android:name=".TKSinhvien"
             android:exported="false" />

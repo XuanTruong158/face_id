@@ -53,21 +53,10 @@
                     android:layout_width="12dp"
                     android:layout_height="wrap_content" />
 
-                <EditText
-                    android:id="@+id/edtKhoa"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Khoa"
-                    android:inputType="text" />
+
             </LinearLayout>
 
-            <!-- Môn học phụ trách -->
-            <Spinner
-                android:id="@+id/spinnerMonhoc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp" />
+
 
             <!-- Họ và tên -->
             <EditText
@@ -89,21 +78,47 @@
 
             <!-- Mật khẩu -->
             <EditText
-                android:id="@+id/edtPassword"
+                android:id="@+id/edtPasswordgv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword" />
+            <!-- Mật khẩu -->
+            <EditText
+                android:id="@+id/edtConfirmPasswordgv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:hint="Mật khẩu"
                 android:inputType="textPassword" />
 
+
             <!-- Nút Thêm -->
-            <Button
-                android:id="@+id/btnThemGiangVien"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/teal_700"
-                android:text="Thêm tài khoản giảng viên"
-                android:textColor="@android:color/white" />
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnThemGiangVien"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/teal_700"
+                    android:text="Tạo tài khoản"
+                    android:textColor="@android:color/white" />
+
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnCancelgv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Huỷ" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
