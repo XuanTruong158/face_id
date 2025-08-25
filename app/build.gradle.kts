@@ -73,4 +73,5 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
     implementation(libs.coroutines.android)
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }

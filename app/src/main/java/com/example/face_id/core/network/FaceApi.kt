@@ -6,6 +6,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface FaceApi {
-    @POST("api/face-descriptors")
+    @POST("face-descriptors")
     suspend fun registerFace(@Body body: FaceDescriptorRequest): Response<Any>
 }
