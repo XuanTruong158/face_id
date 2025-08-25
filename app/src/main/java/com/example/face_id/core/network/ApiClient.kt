@@ -1,15 +1,17 @@
 package com.example.face_id.core.network
 
+import com.example.face_id.core.network.TeacherApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
     // ĐỔI lại theo server của bạn
-    private const val BASE_URL = "http://192.168.1.250:8000/api/"
+    private const val BASE_URL = "http://192.168.1.143:8000/api/"
 
     @Volatile
     private var authToken: String? = null
@@ -40,7 +42,7 @@ object ApiClient {
             .build()
     }
 
-    private val retrofit: Retrofit by lazy {
+   val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(httpClient)
@@ -55,4 +57,5 @@ object ApiClient {
     val faceApi: FaceDescriptorService by lazy {
         retrofit.create(FaceDescriptorService::class.java)  // <- dùng INSTANCE retrofit
     }
+
 }

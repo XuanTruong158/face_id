@@ -3,18 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:strokeColor="@color/card_stroke"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#DDDDDD"
     app:strokeWidth="1dp">
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
-
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,48 +24,58 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/tvTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Android"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:text="Android"/>
+                    android:textColor="@android:color/black" />
+
                 <TextView
                     android:id="@+id/tvCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="CSE123_02"/>
+                    android:drawableStart="@drawable/ic_class"
+                    android:drawablePadding="4dp"
+                    android:text="CSE123_02"
+                    android:textSize="14sp"
+                    android:textColor="#808080" />
             </LinearLayout>
 
-
-            <!-- Nút menu 3 chấm đơn giản -->
-            <TextView
+            <ImageButton
                 android:id="@+id/btnMore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⋮"
-                android:textSize="22sp"
-                android:padding="4dp"/>
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@null"
+                android:src="@drawable/ic_more_vert"
+                android:contentDescription="Tùy chọn khác"
+                app:tint="#000000" />
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="#DDDDDD" />
 
         <TextView
             android:id="@+id/tvDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hiện đang quản lý 2 lớp"
-            android:paddingTop="8dp"
-            android:textColor="@color/text_secondary"/>
-
+            android:textSize="15sp"
+            android:textColor="#000000"
+            android:fontFamily="@font/roboto_bold"/>
 
     </LinearLayout>
-
 
 </com.google.android.material.card.MaterialCardView>

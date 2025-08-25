@@ -16,7 +16,6 @@ import com.example.face_id.R
 import com.example.face_id.auth.model.LoginRequest
 import com.example.face_id.core.network.ApiClient
 import com.example.face_id.face_registration.ui.FaceRegistration
-import com.example.face_id.teacher.ui.MainActivityGVMenu
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
