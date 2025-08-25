@@ -15,11 +15,11 @@
     <color name="blue_900">#0D47A1</color>
     <color name="card_stroke">#E0E3E7</color>
     <color name="text_secondary">#6B7280</color>
-
+    <color name="gray_700">#5F6B7A</color>
     <color name="green_600">#2E7D32</color>
     <color name="green_100">#E9F5EC</color>
     <color name="orange_700">#E65100</color>
     <color name="orange_100">#FFF1E6</color>
 
-    <color name="gray_700">#5F6B7A</color>
+    <color name="info_bg">#F5F7FF</color>
 </resources>
