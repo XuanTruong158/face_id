@@ -7,4 +7,8 @@
     <string name="search_hint">Tìm kiếm lớp học…</string>
     <string name="see_all">Xem tất cả</string>
     <string name="my_classes">LỚP CỦA TÔI</string>
+    <string name="chip_all">Tất cả (%1$d)</string>
+    <string name="chip_present">Có mặt (%1$d)</string>
+    <string name="chip_absent">Vắng (%1$d)</string>
+    <string name="chip_late">Muộn (%1$d)</string>
 </resources>
